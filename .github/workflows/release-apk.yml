@@ -1,0 +1,44 @@
+name: Build & Release Moonwatcher APK
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger only on version tags like v1.0.0
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Upload APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'  # Or whatever your project uses
+
+      - name: 🧱 Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: 🛠️ Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: 📁 Find APK path
+        id: find_apk
+        run: |
+          APK_PATH=$(find $PWD/app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Moonwatcher ${{ github.ref_name }}"
+          body: "Automated release of Moonwatcher APK."
+          files: ${{ steps.find_apk.outputs.apk_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
