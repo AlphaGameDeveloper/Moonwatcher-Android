@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="dev.alphagame.moonwatcher">
 
     <application
         android:allowBackup="true"
@@ -12,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moonwatcher"
         tools:targetApi="31">
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -19,10 +22,21 @@
             android:theme="@style/Theme.Moonwatcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Broadcast Receiver for ADB triggers -->
+        <receiver
+            android:name=".MoonwatcherReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="dev.alphagame.moonwatcher.CAPTURE" />
+                <action android:name="dev.alphagame.moonwatcher.FOCUS" />
+                <action android:name="dev.alphagame.moonwatcher.STATUS" />
+            </intent-filter>
+        </receiver>
+
+    </application>
 </manifest>
